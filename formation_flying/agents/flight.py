@@ -117,6 +117,10 @@ class Flight(Agent):
         if self.state == "flying":
             if self.model.negotiation_method == 0:
                 do_greedy(self)
+
+            if len(self.agents_in_my_formation) > 0 and self.formation_state == 0:
+                raise Exception("Agent status is no-formation, but it has agents registered as being in its formation...")
+
             # if self.model.negotiation_method == 1:
             #     do_CNP(self)
             # if self.model.negotiation_method == 2:
@@ -260,6 +264,11 @@ class Flight(Agent):
     #   !!! TODO Exc. 1.3: improve calculation joining/leaving point.!!!
     # =========================================================================
     def start_formation(self, target_agent, bid_value, discard_received_bids=True):
+        if self == target_agent:
+            raise Exception("ERROR: Trying to start a formation with itself")
+        if len(self.agents_in_my_formation) > 0 or len(target_agent.agents_in_my_formation) > 0:
+            raise Exception("Starting a formation with an agent that is already in a formation!")
+
         self.model.new_formation_counter += 1
         self.model.fuel_savings_closed_deals += self.calculate_potential_fuelsavings(target_agent)
         self.deal_value += bid_value
@@ -313,7 +322,9 @@ class Flight(Agent):
         for agent in neighbors:
             if type(agent) is Flight:
                 if agent.accepting_bids == 1:
-                    candidates.append(agent)
+                    if not self == agent:
+                        # Pass if it is the current agent
+                        candidates.append(agent)
         return candidates
 
     # =========================================================================

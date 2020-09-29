@@ -1,8 +1,12 @@
-from formation_flying.server import server
-import asyncio
-asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())  # python-3.8.0a4
+import sys, asyncio
+import random
+if sys.version_info[0]==3 and sys.version_info[1] >= 8 and sys.platform.startswith('win'):
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-server.port = 8530
+from formation_flying.server import server
+
+
+server.port = random.randrange(8500, 9000)
 server.launch()
 
 

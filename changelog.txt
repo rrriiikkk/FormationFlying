@@ -1,0 +1,6 @@
+VERSION 7:
+- in flight.py, in the function find_greedy_candidate(), it doesn't return the self agent anymore.
+- in do_greedy.py, only formations are started with other flights which arent in a formation themselves
+- added some Exceptions which will (hopefully) catch errors sooner when they arrive.
+- added random server port
+- for those on Windows & python 3.8, I added the asyncio exception automatically so you don't need to worry about it.
