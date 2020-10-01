@@ -53,6 +53,8 @@ model_params = {
     "origin_airport_y": [0.01, 0.3],
     "destination_airport_x": [0.7, 0.99], 
     "destination_airport_y": [0.7, 0.99],
+    "PercentageAlliance": 40,
+    
 }
 
 # To run model with a variable parameter:

@@ -17,7 +17,8 @@ import numpy as np
 
 from mesa import Agent
 from .airports import Airport
-from ..negotiations.greedy import do_greedy # !!! Don't forget the others.
+from ..negotiations.greedy import do_greedy
+from ..negotiations.CNP import do_CNP
 import math
 
 
@@ -56,6 +57,7 @@ class Flight(Agent):
             departure_time,
             speed,
             communication_range,
+            
     ):
 
         super().__init__(unique_id, model)
@@ -66,6 +68,7 @@ class Flight(Agent):
         self.departure_time = departure_time
         self.heading = [self.destination[0] - self.pos[0], self.destination[1] - self.pos[1]]
         self.communication_range = communication_range
+        
 
         # =====================================================================
         #   Initialize parameters, the values will not be used later on.
@@ -100,6 +103,16 @@ class Flight(Agent):
         if self.manager:
             self.accepting_bids = 1
         self.auctioneer = abs(1 - self.manager)
+        
+        
+        #in only 'PercentageAlliance' amount of time the flight should be part of the alliance
+        zeros = np.zeros(100-self.model.PercentageAlliance, dtype=int)
+        ones = np.ones(self.model.PercentageAlliance, dtype=int)
+        keuze = np.append(zeros, ones)        
+        
+        self.Alliance = self.model.random.choice(keuze)
+        
+        
 
     # =============================================================================
     #   In advance, the agent moves (physically) to the next step (after having negotiated)
@@ -121,8 +134,8 @@ class Flight(Agent):
             if len(self.agents_in_my_formation) > 0 and self.formation_state == 0:
                 raise Exception("Agent status is no-formation, but it has agents registered as being in its formation...")
 
-            # if self.model.negotiation_method == 1:
-            #     do_CNP(self)
+            if self.model.negotiation_method == 1:
+                do_CNP(self)
             # if self.model.negotiation_method == 2:
             #     do_English(self)
             # if self.model.negotiation_method == 3:
@@ -281,8 +294,8 @@ class Flight(Agent):
         # You can use the following error message if you want to ensure that managers can only start formations with
         # auctioneers. The code itself has no functionality, but is a "check"
 
-        # if not self.manager and target_agent.auctioneer:
-        #   raise Exception("Something is going wrong")
+        if not self.manager and target_agent.auctioneer:
+          raise Exception("Manager tries to form a formation with another manager")
 
         if discard_received_bids:
             self.received_bids = []
@@ -313,7 +326,7 @@ class Flight(Agent):
     # =============================================================================
     #   This function finds the agents to make a bid to, and returns a list of these agents.
     #   In the current implementation, it randomly returns an agent, 
-    #   instead of deciding which manager it wants tomake a bid to.
+    #   instead of deciding which manager it wants to make a bid to.
     # =============================================================================
 
     def find_greedy_candidate(self):
@@ -326,6 +339,21 @@ class Flight(Agent):
                         # Pass if it is the current agent
                         candidates.append(agent)
         return candidates
+    
+    # =============================================================================
+    #   This function finds the agents to reach out to, and returns a list of these agents.
+    # =============================================================================   
+    def find_CNP_auctioneers(self):
+        neighbors = self.model.space.get_neighbors(pos=self.pos, radius=self.communication_range, include_center=True)
+        auctioneers = []
+        for agent in neighbors:
+            if type(agent) is Flight:
+                if agent.accepting_bids == 0:
+                    if not self == agent:
+                        # Pass if it is the current agent
+                        auctioneers.append(agent)
+        return auctioneers
+        
 
     # =========================================================================
     #   Making the bid.

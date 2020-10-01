@@ -6,7 +6,7 @@ if sys.version_info[0]==3 and sys.version_info[1] >= 8 and sys.platform.startswi
 from formation_flying.server import server
 
 
-server.port = random.randrange(8500, 9000)
+server.port = random.randrange(8515, 9000)
 server.launch()
 
 
