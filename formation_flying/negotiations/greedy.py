@@ -14,7 +14,7 @@ def do_greedy(flight):
     # If the agent is not yet in a formation, start finding candidates.
     if flight.formation_state == 0:
         formation_targets = flight.find_greedy_candidate()
-        print(formation_targets)
+
         
         
         # If there are candidates, start a formation with the first candidate 

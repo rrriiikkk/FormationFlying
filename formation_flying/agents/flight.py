@@ -84,7 +84,11 @@ class Flight(Agent):
         self.fuel_consumption = 0   # A counter which counts the fuel consumed
         self.deal_value = 0         # All the fuel lost or won during bidding
 
-        self.formation_state = 0    # 0 = no formation, 1 = committed, 2 = in formation, 3 = unavailable, 4 = adding to formation
+        self.formation_state = 0    # 0 = no formation, 
+                                    #1 = committed, 
+                                    #2 = in formation, 
+                                    #3 = unavailable, 
+                                    #4 = adding to formation
 
         self.state = "scheduled"    # Can be scheduled, flying, or arrived
 
@@ -110,7 +114,13 @@ class Flight(Agent):
         ones = np.ones(self.model.PercentageAlliance, dtype=int)
         keuze = np.append(zeros, ones)        
         
-        self.Alliance = self.model.random.choice(keuze)
+        self.Alliance               = self.model.random.choice(keuze)
+        self.potential_auctioneers  = []            #this list will contain all the potential auctioneers for a manager
+        self.potential_managers     = []            #this list will contain all the potential managers that sent a request to the respective auctioneer
+        self.negotiation_state      = 0             #0 = no negotiation is initialised, managers will send requests to auctioneers
+                                                    #1 = Auctioneers send their biddings if they are interested, 
+                                                    #2 = Manager decides who to give the contract 
+        
         
         
 
@@ -353,13 +363,23 @@ class Flight(Agent):
                         # Pass if it is the current agent
                         auctioneers.append(agent)
         return auctioneers
+
+    # =============================================================================
+    #   append to manager potential auctioneers and append to potential auctioneers potential managers
+    # =============================================================================   
+
+        
+    def which_manager_for_which_auctioneer(self, auctioneer):
+        self.potential_auctioneers.append(auctioneer)
+        auctioneer.potential_managers.append(self)
+        
         
 
     # =========================================================================
     #   Making the bid.
     # =========================================================================
     def make_bid(self, bidding_target, bid_value, bid_expiration_date):
-        bid = {"bidding_agent": self, "value": bid_value, "exp_date": bid_expiration_date}
+        bid = {"bidding_agent": self, "value": bid_value, "exp_date": bid_expiration_date, "Alliance": self.Alliance}
         bidding_target.received_bids.append(bid)
 
     # =========================================================================
