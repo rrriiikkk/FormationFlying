@@ -84,20 +84,13 @@ def do_CNP(flight):
                         valueB.append(bid.get("value"))
                         bidding_agentB.append(bid.get("bidding_agent"))                           
 
-                if flight.Alliance == 1 and (max(valueA) >= max(valueB) or 1.25*max(valueA) >= max(valueB)):
+                if max(valueA) >= max(valueB) or 1.25*max(valueA) >= max(valueB):
                     winning_agent = bidding_agentA[valueA.index(max(valueA))]
                     bid_value = max(valueA)
                     
-                elif flight.Alliance == 1 and (max(valueA) <= max(valueB)):
+                elif max(valueA) <= max(valueB):
                     winning_agent = bidding_agentB[valueB.index(max(valueB))]   
                     bid_value = max(valueB)
-                
-                #if manager is not alliance member --> doesn't care if auctioneer is member
-                elif flight.Alliance == 0:
-                    valueA.extend(valueB)
-                    bidding_agentA.extend(bidding_agentB)
-                    winning_agent = bidding_agentA[valueA.index(max(valueA))]
-                    
                     
                 else:
                     raise Exception("something went wrong in diciding the winning auctioneer")                            
