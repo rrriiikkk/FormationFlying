@@ -160,23 +160,158 @@ class Flight(Agent):
     #
     #   !!! TODO Exc. 1.3: improve calculation joining/leaving point.!!!
     # =============================================================================
-    def calculate_potential_fuelsavings(self, target_agent):
+    def calculate_joining_point(self, target_agent):
+
+        rotation = np.array([[0, -1], [1, 0]])
+
         if len(self.agents_in_my_formation) == 0 and len(target_agent.agents_in_my_formation) == 0:
-            joining_point = self.calc_middle_point(self.pos, target_agent.pos)
-            leaving_point = self.calc_middle_point(self.destination, target_agent.destination)
+            destination1 = self.destination
+            destination2 = target_agent.destination
 
-            original_distance = calc_distance(self.pos, self.destination) + calc_distance(target_agent.pos, target_agent.destination)
+        else:
+            if len(self.agents_in_my_formation) > 0 and len(target_agent.agents_in_my_formation) > 0:
+                raise Exception("This function is not advanced enough to handle two formations joining")
 
-            # We can multiply by 2 as the joining- and leaving-points are in the middle!
-            # WARNING: If you change the way the leaving- and joining-points are calculated, you should change this formula accordingly!
+            if len(self.agents_in_my_formation) > 0 and len(target_agent.agents_in_my_formation) == 0:
+                destination1 = self.leaving_point
+                destination2 = target_agent.destination
 
-            added_distance_agent1 = calc_distance(self.pos, joining_point) + calc_distance(leaving_point, self.destination)
-            added_distance_agent2 = calc_distance(target_agent.pos, joining_point) + calc_distance(target_agent.destination, leaving_point)
-            formation_distance = calc_distance(leaving_point, joining_point) * 2
+            elif len(self.agents_in_my_formation) == 0 and len(target_agent.agents_in_my_formation) > 0:
+                destination1 = self.destination
+                destination2 = target_agent.leaving_point
 
-            new_total_distance = self.model.fuel_reduction * formation_distance + added_distance_agent1 + added_distance_agent2
+        origin_midpoint = np.array(self.calc_middle_point(self.pos, target_agent.pos))
+        dest_midpoint = np.array(self.calc_middle_point(destination1, destination2))
 
-            fuel_savings = original_distance - new_total_distance
+        trajectory_line = dest_midpoint - origin_midpoint
+        trajectory_slope = (dest_midpoint[1] - origin_midpoint[1]) / (dest_midpoint[0] - origin_midpoint[0])
+
+        original_traject_agent1 = destination1 - self.pos
+        original_traject_agent2 = destination2 - target_agent.pos
+
+        potential_joinpath_agent1 = origin_midpoint - self.pos
+        potential_joinpath_agent2 = origin_midpoint - target_agent.pos
+
+        alpha_agent1 = np.dot(original_traject_agent1, potential_joinpath_agent1)
+        alpha_agent2 = np.dot(original_traject_agent2, potential_joinpath_agent2)
+
+        # We can multiply by 2 as the joining- and leaving-points are in the middle!
+        # WARNING: If you change the way the leaving- and joining-points are calculated, you should change this formula accordingly!
+
+        # Determine the joining point
+
+        if alpha_agent1 < 0 and alpha_agent2 >= 0:  # agent 1 is limiting factor
+            distance = abs((np.cross(trajectory_line, potential_joinpath_agent1)) / np.linalg.norm(trajectory_line))
+            direction = (np.dot(rotation, trajectory_line)) / np.linalg.norm(trajectory_line)
+            if self.pos[1] > origin_midpoint[1] + trajectory_slope * (self.pos[0] - origin_midpoint[0]):
+                joining_point = self.pos - direction * distance
+            elif self.pos[1] < origin_midpoint[1] + trajectory_slope * (self.pos[0] - origin_midpoint[0]):
+                joining_point = self.pos + direction * distance
+            else:
+                joining_point = self.pos
+
+        elif alpha_agent1 >= 0 and alpha_agent2 < 0:  # agent 2 is limiting factor
+            distance = abs((np.cross(trajectory_line, potential_joinpath_agent2)) / np.linalg.norm(trajectory_line))
+            direction = (np.dot(rotation, trajectory_line)) / np.linalg.norm(trajectory_line)
+            if target_agent.pos[1] > origin_midpoint[1] + trajectory_slope * (
+                    target_agent.pos[0] - origin_midpoint[0]):
+                joining_point = target_agent.pos - direction * distance
+            elif target_agent.pos[1] < origin_midpoint[1] + trajectory_slope * (
+                    target_agent.pos[0] - origin_midpoint[0]):
+                joining_point = target_agent.pos + direction * distance
+            else:
+                joining_point = target_agent.pos
+
+        elif alpha_agent1 >= 0 and alpha_agent2 >= 0:
+            raise Exception("the origin midpoint cannot lay in front of both agents")
+
+        else:
+            raise Exception("the origin midpoint cannot lay behind both agents")
+
+        return joining_point
+
+    def calculate_leaving_point(self,target_agent):
+
+        rotation = np.array([[0, -1], [1, 0]])
+
+        if len(self.agents_in_my_formation) == 0 and len(target_agent.agents_in_my_formation) == 0:
+            destination1 = self.destination
+            destination2 = target_agent.destination
+
+        else:
+            if len(self.agents_in_my_formation) > 0 and len(target_agent.agents_in_my_formation) > 0:
+                raise Exception("This function is not advanced enough to handle two formations joining")
+
+            if len(self.agents_in_my_formation) > 0 and len(target_agent.agents_in_my_formation) == 0:
+                destination1 = self.leaving_point
+                destination2 = target_agent.destination
+
+            elif len(self.agents_in_my_formation) == 0 and len(target_agent.agents_in_my_formation) > 0:
+                destination1 = self.destination
+                destination2 = target_agent.leaving_point
+
+
+        origin_midpoint = np.array(self.calc_middle_point(self.pos, target_agent.pos))
+        dest_midpoint = np.array(self.calc_middle_point(destination1, destination2))
+
+        original_traject_agent1 = destination1 - self.pos
+        original_traject_agent2 = destination2 - target_agent.pos
+
+        potential_leavepath_agent1 = destination1 - dest_midpoint
+        potential_leavepath_agent2 = destination1 - dest_midpoint
+
+        trajectory_line = dest_midpoint - origin_midpoint
+        trajectory_slope = (dest_midpoint[1] - origin_midpoint[1]) / (dest_midpoint[0] - origin_midpoint[0])
+
+        beta_agent1 = np.dot(original_traject_agent1, potential_leavepath_agent1)
+        beta_agent2 = np.dot(original_traject_agent2, potential_leavepath_agent2)
+
+        if beta_agent1 < 0 and beta_agent2 >= 0:  # agent 1 is limiting factor
+            distance = abs(
+                (np.cross(trajectory_line, potential_leavepath_agent1)) / np.linalg.norm(trajectory_line))
+            direction = (np.dot(rotation, trajectory_line)) / np.linalg.norm(trajectory_line)
+            if self.destination[1] > dest_midpoint[1] + trajectory_slope * (self.destination[0] - dest_midpoint[0]):
+                leaving_point = self.destination - direction * distance
+            elif self.destination[1] < dest_midpoint[1] + trajectory_slope * (self.destination[0] - dest_midpoint[0]):
+                leaving_point = self.destination + direction * distance
+            else:
+                leaving_point = self.destination
+
+        elif beta_agent1 >= 0 and beta_agent2 < 0:  # agent 2 is limiting factor
+            distance = abs(
+                (np.cross(trajectory_line, potential_leavepath_agent2)) / np.linalg.norm(trajectory_line))
+            direction = (np.dot(rotation, trajectory_line)) / np.linalg.norm(trajectory_line)
+            if target_agent.destination[1] > dest_midpoint[1] + trajectory_slope * (
+                    target_agent.destination[0] - dest_midpoint[0]):
+                leaving_point = target_agent.destination - direction * distance
+            elif target_agent.destination[1] < dest_midpoint[1] + trajectory_slope * (
+                    target_agent.destination[0] - dest_midpoint[0]):
+                leaving_point = target_agent.destination + direction * distance
+            else:
+                leaving_point = target_agent.destination
+
+        elif beta_agent1 >= 0 and beta_agent2 >= 0:
+            raise Exception("the destination midpoint cannot lay in front of both agents")
+        else:
+            raise Exception("the destination midpoint cannot lay behind both agents")
+
+        return leaving_point
+
+    def calculate_potential_fuelsavings(self, target_agent):
+
+        joining_point = self.calculate_joining_point(target_agent)
+        leaving_point = self.calculate_leaving_point(target_agent)
+
+        if len(self.agents_in_my_formation) == 0 and len(target_agent.agents_in_my_formation) == 0:
+
+            original_distance = calc_distance(self.destination,self.pos) + calc_distance(target_agent.destination,target_agent.pos)
+
+            agent1_new_distance = calc_distance(self.pos, joining_point)+self.model.fuel_reduction*calc_distance(
+                joining_point, leaving_point) + calc_distance(leaving_point,self.destination)
+            agent2_new_distance = calc_distance(target_agent.pos, joining_point) + self.model.fuel_reduction * calc_distance(
+                joining_point, leaving_point) + calc_distance(leaving_point, target_agent.destination)
+
+            fuel_savings = original_distance - agent1_new_distance - agent2_new_distance
 
         else:
             if len(self.agents_in_my_formation) > 0 and len(target_agent.agents_in_my_formation) > 0:
@@ -185,36 +320,34 @@ class Flight(Agent):
             if len(self.agents_in_my_formation) > 0 and len(target_agent.agents_in_my_formation) == 0:
                 formation_leader = self
                 formation_joiner = target_agent
-                n_agents_in_formation = len(self.agents_in_my_formation) + 1
 
             elif len(self.agents_in_my_formation) == 0 and len(target_agent.agents_in_my_formation) > 0:
                 formation_leader = target_agent
                 formation_joiner = self
-                n_agents_in_formation = len(target_agent.agents_in_my_formation) + 1
 
-            joining_point = self.calc_middle_point(formation_leader.pos, formation_joiner.pos)
-            leaving_point = formation_leader.leaving_point
+            # Fuel for formation
 
-            # Fuel for leader
-            new_distance_formation = calc_distance(formation_leader.pos, joining_point) + calc_distance(joining_point, leaving_point)
-            total_fuel_formation = self.model.fuel_reduction * n_agents_in_formation * new_distance_formation
+            old_distance_formation = 0
+            new_distance_formation = 0
 
-            original_distance_formation = calc_distance(formation_leader.pos, leaving_point)
-            original_fuel_formation = self.model.fuel_reduction * n_agents_in_formation * original_distance_formation
+            for agent in formation_leader.agents_in_my_formation:
+                old_agent_distance = self.model.fuel_reduction * calc_distance(agent.pos, formation_leader.leaving_point) + calc_distance(formation_leader.leaving_point, agent.destination)
+                new_agent_distance = calc_distance(agent.pos, joining_point) + self.model.fuel_reduction*calc_distance(joining_point, leaving_point) + calc_distance(leaving_point, agent.destination)
+                old_distance_formation += old_agent_distance
+                new_distance_formation += new_agent_distance
 
-            fuel_savings_formation = original_fuel_formation - total_fuel_formation
+            # Fuel for joiner
 
-            # Fuel for new agent
-            fuel_to_joining_joiner = calc_distance(self.pos, joining_point)
-            fuel_in_formation_joiner = calc_distance(joining_point, leaving_point) * self.model.fuel_reduction
-            fuel_from_leaving_joiner = calc_distance(leaving_point, formation_joiner.destination)
-            total_fuel_joiner = fuel_to_joining_joiner + fuel_in_formation_joiner + fuel_from_leaving_joiner
+            old_distance_joiner = calc_distance(formation_joiner.pos, formation_joiner.destination)
+            new_distance_joiner = calc_distance(formation_joiner.pos, joining_point) + self.model.fuel_reduction * calc_distance(
+                joining_point, leaving_point) + calc_distance(leaving_point, formation_joiner.destination)
 
-            original_fuel_joiner = calc_distance(formation_joiner.pos, formation_joiner.destination)
+            # Total fuel
 
-            fuel_savings_joiner = original_fuel_joiner - total_fuel_joiner
+            fuel_savings_formation = old_distance_formation - new_distance_formation
+            fuel_savings_joiner = old_distance_joiner - new_distance_joiner
 
-            fuel_savings = fuel_savings_joiner + fuel_savings_formation
+            fuel_savings = fuel_savings_formation + fuel_savings_joiner
 
         return fuel_savings
 
@@ -238,7 +371,6 @@ class Flight(Agent):
         if len(target_agent.agents_in_my_formation) > 0 and len(self.agents_in_my_formation) == 0:
             raise Exception("Model isn't designed for this scenario.")
 
-
         self.model.add_to_formation_counter += 1
         self.accepting_bids = False
 
@@ -246,7 +378,8 @@ class Flight(Agent):
             # Discard all bids that have been received
             self.received_bids = []
 
-        self.joining_point = self.calc_middle_point(self.pos, target_agent.pos)
+        self.joining_point = self.calculate_joining_point(target_agent)
+        self.leaving_point = self.calculate_leaving_point(target_agent)
         self.speed_to_joining = self.calc_speed_to_joining_point(target_agent)
 
         involved_agents = [self]
@@ -271,13 +404,17 @@ class Flight(Agent):
 
         target_agent.formation_state = 1
 
-        target_agent.agents_in_my_formation = involved_agents
-        involved_agents.append(target_agent)
+        target_agent.joining_point = target_agent.calculate_joining_point(self)
+        target_agent.leaving_point = target_agent.calculate_leaving_point(self)
+        target_agent.speed_to_joining = target_agent.calc_speed_to_joining_point(self)
 
         for agent in involved_agents:
             agent.joining_point = self.joining_point
             agent.leaving_point = self.leaving_point
-            agent.speed_to_joining = self.speed_to_joining
+            agent.speed_to_joining = self.calc_speed_to_joining_point(target_agent)
+
+        target_agent.agents_in_my_formation = involved_agents
+        involved_agents.append(target_agent)
 
     # =========================================================================
     #   The value of the bid is added to the "deal value" of the manager, 
@@ -500,17 +637,17 @@ class Flight(Agent):
     # =========================================================================
     def calc_speed_to_joining_point(self, neighbor):
 
-        joining_point = self.calc_middle_point(self.pos, neighbor.pos)
+        joining_point = self.calculate_joining_point(neighbor)
         dist_self = ((joining_point[0] - self.pos[0]) ** 2 + (joining_point[1] - self.pos[1]) ** 2) ** 0.5
         dist_neighbor = ((joining_point[0] - self.pos[0]) ** 2 + (joining_point[1] - self.pos[1]) ** 2) ** 0.5
 
-        if abs(1 - dist_self / dist_neighbor) > 0.001:
-            # If this exception is thrown, it means that the joining point is 
-            # not at equal distances from both aircraft.
-            raise Exception("Joining point != middle point")
+        if dist_self >= dist_neighbor:
+            speed = self.speed
+        else:
+            speed = self.speed*(dist_self/dist_neighbor)
 
-        rest = dist_self % self.speed
-        regular_time = math.floor(dist_self / self.speed)
+        rest = dist_self % speed
+        regular_time = math.floor(dist_self / speed)
         if rest > 0:
             time = regular_time + 1
         elif rest == 0:
