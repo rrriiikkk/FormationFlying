@@ -186,21 +186,18 @@ class Flight(Agent):
         trajectory_line = dest_midpoint - origin_midpoint
         trajectory_slope = (dest_midpoint[1] - origin_midpoint[1]) / (dest_midpoint[0] - origin_midpoint[0])
 
-        original_traject_agent1 = destination1 - self.pos
-        original_traject_agent2 = destination2 - target_agent.pos
-
         potential_joinpath_agent1 = origin_midpoint - self.pos
         potential_joinpath_agent2 = origin_midpoint - target_agent.pos
 
-        alpha_agent1 = np.dot(original_traject_agent1, potential_joinpath_agent1)
-        alpha_agent2 = np.dot(original_traject_agent2, potential_joinpath_agent2)
+        alpha_agent1 = np.dot(trajectory_line, potential_joinpath_agent1)
+        alpha_agent2 = np.dot(trajectory_line, potential_joinpath_agent2)
 
         # We can multiply by 2 as the joining- and leaving-points are in the middle!
         # WARNING: If you change the way the leaving- and joining-points are calculated, you should change this formula accordingly!
 
         # Determine the joining point
 
-        if alpha_agent1 < 0 and alpha_agent2 >= 0:  # agent 1 is limiting factor
+        if alpha_agent1 < 0 and alpha_agent2 > 0:  # agent 1 is limiting factor
             distance = abs((np.cross(trajectory_line, potential_joinpath_agent1)) / np.linalg.norm(trajectory_line))
             direction = (np.dot(rotation, trajectory_line)) / np.linalg.norm(trajectory_line)
             if self.pos[1] > origin_midpoint[1] + trajectory_slope * (self.pos[0] - origin_midpoint[0]):
@@ -210,7 +207,7 @@ class Flight(Agent):
             else:
                 joining_point = self.pos
 
-        elif alpha_agent1 >= 0 and alpha_agent2 < 0:  # agent 2 is limiting factor
+        elif alpha_agent1 > 0 and alpha_agent2 < 0:  # agent 2 is limiting factor
             distance = abs((np.cross(trajectory_line, potential_joinpath_agent2)) / np.linalg.norm(trajectory_line))
             direction = (np.dot(rotation, trajectory_line)) / np.linalg.norm(trajectory_line)
             if target_agent.pos[1] > origin_midpoint[1] + trajectory_slope * (
@@ -222,11 +219,11 @@ class Flight(Agent):
             else:
                 joining_point = target_agent.pos
 
-        elif alpha_agent1 >= 0 and alpha_agent2 >= 0:
-            raise Exception("the origin midpoint cannot lay in front of both agents")
+        elif alpha_agent1 == 0 and alpha_agent2 == 0:
+            joining_point = origin_midpoint
 
         else:
-            raise Exception("the origin midpoint cannot lay behind both agents")
+            raise Exception("the origin midpoint cannot lay in front or behind both agents")
 
         return joining_point
 
@@ -254,19 +251,16 @@ class Flight(Agent):
         origin_midpoint = np.array(self.calc_middle_point(self.pos, target_agent.pos))
         dest_midpoint = np.array(self.calc_middle_point(destination1, destination2))
 
-        original_traject_agent1 = destination1 - self.pos
-        original_traject_agent2 = destination2 - target_agent.pos
-
         potential_leavepath_agent1 = destination1 - dest_midpoint
-        potential_leavepath_agent2 = destination1 - dest_midpoint
+        potential_leavepath_agent2 = destination2 - dest_midpoint
 
         trajectory_line = dest_midpoint - origin_midpoint
         trajectory_slope = (dest_midpoint[1] - origin_midpoint[1]) / (dest_midpoint[0] - origin_midpoint[0])
 
-        beta_agent1 = np.dot(original_traject_agent1, potential_leavepath_agent1)
-        beta_agent2 = np.dot(original_traject_agent2, potential_leavepath_agent2)
+        beta_agent1 = np.dot(trajectory_line, potential_leavepath_agent1)
+        beta_agent2 = np.dot(trajectory_line, potential_leavepath_agent2)
 
-        if beta_agent1 < 0 and beta_agent2 >= 0:  # agent 1 is limiting factor
+        if beta_agent1 < 0 and beta_agent2 > 0:  # agent 1 is limiting factor
             distance = abs(
                 (np.cross(trajectory_line, potential_leavepath_agent1)) / np.linalg.norm(trajectory_line))
             direction = (np.dot(rotation, trajectory_line)) / np.linalg.norm(trajectory_line)
@@ -277,7 +271,7 @@ class Flight(Agent):
             else:
                 leaving_point = self.destination
 
-        elif beta_agent1 >= 0 and beta_agent2 < 0:  # agent 2 is limiting factor
+        elif beta_agent1 > 0 and beta_agent2 < 0:  # agent 2 is limiting factor
             distance = abs(
                 (np.cross(trajectory_line, potential_leavepath_agent2)) / np.linalg.norm(trajectory_line))
             direction = (np.dot(rotation, trajectory_line)) / np.linalg.norm(trajectory_line)
@@ -290,10 +284,10 @@ class Flight(Agent):
             else:
                 leaving_point = target_agent.destination
 
-        elif beta_agent1 >= 0 and beta_agent2 >= 0:
-            raise Exception("the destination midpoint cannot lay in front of both agents")
+        elif beta_agent1 == 0 and beta_agent2 == 0:
+            leaving_point = dest_midpoint
         else:
-            raise Exception("the destination midpoint cannot lay behind both agents")
+            raise Exception("the destination midpoint cannot lay in front or behind both agents")
 
         return leaving_point
 
@@ -404,8 +398,8 @@ class Flight(Agent):
 
         target_agent.formation_state = 1
 
-        target_agent.joining_point = target_agent.calculate_joining_point(self)
-        target_agent.leaving_point = target_agent.calculate_leaving_point(self)
+        target_agent.joining_point = self.joining_point
+        target_agent.leaving_point = self.leaving_point
         target_agent.speed_to_joining = target_agent.calc_speed_to_joining_point(self)
 
         for agent in involved_agents:
@@ -454,17 +448,17 @@ class Flight(Agent):
             self.accepting_bids = True
 
         else:
-            self.joining_point = self.calc_middle_point(self.pos, target_agent.pos)
-
+            self.joining_point = self.calculate_joining_point(target_agent)
             target_agent.joining_point = self.joining_point
+
             self.speed_to_joining = self.calc_speed_to_joining_point(target_agent)
-            target_agent.speed_to_joining = self.calc_speed_to_joining_point(target_agent)
+            target_agent.speed_to_joining = target_agent.calc_speed_to_joining_point(self)
 
             target_agent.formation_state = 1
             self.formation_state = 1
 
 
-        self.leaving_point = self.calc_middle_point(self.destination, target_agent.destination)
+        self.leaving_point = self.calculate_leaving_point(target_agent)
         self.agents_in_my_formation.append(target_agent)
         target_agent.agents_in_my_formation.append(self)
         target_agent.leaving_point = self.leaving_point
