@@ -489,7 +489,7 @@ class Flight(Agent):
         neighbors = self.model.space.get_neighbors(pos=self.pos, radius=self.communication_range, include_center=True)
         auctioneers = []
         for agent in neighbors:
-            if type(agent) is Flight:
+            if type(agent) is Flight and agent.negotiation_state == 0 and agent.formation_state == 0:
                 if agent.accepting_bids == 0:
                     if not self == agent:
                         # Pass if it is the current agent
@@ -513,6 +513,24 @@ class Flight(Agent):
     def make_bid(self, bidding_target, bid_value, bid_expiration_date):
         bid = {"bidding_agent": self, "value": bid_value, "exp_date": bid_expiration_date, "Alliance": self.Alliance}
         bidding_target.received_bids.append(bid)
+
+
+
+    # =========================================================================
+    #   Existing flights that havn't formed a formation yet will be re-assigned to become manager/auctioneer
+    # =========================================================================
+    def regenerate_manager_auctioneer(self):
+#        self.negotiation_state = 0
+        self.potential_auctioneers = []
+        self.potential_managers = []
+        self.received_bids = []
+        if self.formation_state == 0:
+            self.manager = self.model.random.choice([0, 1])
+            if self.manager:
+                self.accepting_bids = 1
+            else: 
+                self.accepting_bids = 0
+            self.auctioneer = abs(1 - self.manager)  
 
     # =========================================================================
     #   This function randomly chooses a new destination airport. 

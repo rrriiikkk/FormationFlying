@@ -10,42 +10,93 @@ import numpy as np
 
 
 
-received_bids = []
-
-bid1 = {"bidding_agent": 1111, "value": 125, "exp_date": 3, "Alliance": 0}
-bid2 = {"bidding_agent": 1112, "value": 100, "exp_date": 3, "Alliance": 0}
-bid3 = {"bidding_agent": 1113, "value": 100, "exp_date": 3, "Alliance": 1}
-
-received_bids.append(bid1)
-received_bids.append(bid2)
-received_bids.append(bid3)
 
 
-valueA = [] #bidding values of alliance members
-valueB = [] #bidding values of non-alliance members
-bidding_agentA = []
-bidding_agentB = []
 
+a = 2
 
-for bid in received_bids:
-    if bid.get("Alliance") == 1:
-        valueA.append(bid.get("value"))
-        bidding_agentA.append(bid.get("bidding_agent"))
-    elif bid.get("Alliance") == 0:
-        valueB.append(bid.get("value"))
-        bidding_agentB.append(bid.get("bidding_agent"))       
- 
-#a deal is only considered with a non-alliance member if the bidding_value is >=25% larger    
-if max(valueA) >= max(valueB) or 1.25*max(valueA) >= max(valueB):
-    winning_agent = bidding_agentA[valueA.index(max(valueA))]
+if a == 3:
+    a = 2
+elif a == 2:
+    a = 1
     
-elif max(valueA) <= max(valueB):
-    winning_agent = bidding_agentB[valueB.index(max(valueB))]   
+print(a)
 
-else:
-    raise Exception("something went wrong in diciding the winning auctioneer")
 
-    
+
+
+negotiation_state = 0
+
+
+negotiation_state += 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#selfalliance = 0
+#
+#received_bids = []
+#
+#bid1 = {"bidding_agent": 1111, "value": 125, "exp_date": 3, "Alliance": 0}
+#bid2 = {"bidding_agent": 1112, "value": 100, "exp_date": 3, "Alliance": 0}
+#bid3 = {"bidding_agent": 1113, "value": 100, "exp_date": 3, "Alliance": 1}
+#
+#received_bids.append(bid1)
+#received_bids.append(bid2)
+#received_bids.append(bid3)
+#
+#
+#
+#if received_bids != []:
+# 
+#    
+#    
+#    valueA = [] #bidding values of alliance members
+#    valueB = [] #bidding values of non-alliance members
+#    bidding_agentA = []
+#    bidding_agentB = []
+#    
+#    
+#    for bid in received_bids:
+#        if bid.get("Alliance") == 1:
+#            valueA.append(bid.get("value"))
+#            bidding_agentA.append(bid.get("bidding_agent"))
+#        elif bid.get("Alliance") == 0:
+#            valueB.append(bid.get("value"))
+#            bidding_agentB.append(bid.get("bidding_agent"))       
+#     
+#    #a deal is only considered with a non-alliance member if the bidding_value is >=25% larger    
+#    if selfalliance == 1 and (max(valueA) >= max(valueB) or 1.25*max(valueA) >= max(valueB)):
+#        winning_agent = bidding_agentA[valueA.index(max(valueA))]
+#        
+#    elif selfalliance == 1 and (max(valueA) < max(valueB)):
+#        winning_agent = bidding_agentB[valueB.index(max(valueB))]   
+# 
+#    elif selfalliance == 0:
+#        valueA.extend(valueB)
+#        bidding_agentA.extend(bidding_agentB)
+#        winning_agent = bidding_agentA[valueA.index(max(valueA))]
+#    
+#    else:
+#        raise Exception("something went wrong in diciding the winning auctioneer")
+#
+#elif received_bids == []:
+#    print("gelukt")
+#    
     
 
     
