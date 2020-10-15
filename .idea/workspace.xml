@@ -1,7 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </select>
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="18e5cbe5-b8a7-4bbc-9c79-7f637ac91df2" name="Default Changelist" comment="" />
+    <list default="true" id="18e5cbe5-b8a7-4bbc-9c79-7f637ac91df2" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/formation_flying/agents/flight.py" beforeDir="false" afterPath="$PROJECT_DIR$/formation_flying/agents/flight.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -57,14 +83,39 @@
     </task>
     <servers />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
   <component name="WindowStateProjectService">
     <state x="414" y="-905" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1602497819034">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
     <state x="414" y="-905" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1536.824/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1602497819034" />
-    <state x="461" y="-915" key="SettingsEditor" timestamp="1602497862492">
-      <screen x="0" y="-1080" width="1920" height="1040" />
+    <state x="2577" y="-440" key="RollbackChangesDialog" timestamp="1602750147125">
+      <screen x="1680" y="-605" width="2560" height="986" />
+    </state>
+    <state x="2577" y="-440" key="RollbackChangesDialog/1680.-605.2560.986/0.23.1680.1027@1680.-605.2560.986" timestamp="1602750147125" />
+    <state x="2295" y="-449" key="SettingsEditor" timestamp="1602750651324">
+      <screen x="1680" y="-605" width="2560" height="986" />
     </state>
     <state x="461" y="-915" key="SettingsEditor/0.0.1536.824/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1602497862492" />
+    <state x="2295" y="-449" key="SettingsEditor/1680.-605.2560.986/0.23.1680.1027@1680.-605.2560.986" timestamp="1602750651324" />
+    <state x="2677" y="-229" key="VCS.ChangelistChooser" timestamp="1602750124603">
+      <screen x="1680" y="-605" width="2560" height="986" />
+    </state>
+    <state x="2677" y="-229" key="VCS.ChangelistChooser/1680.-605.2560.986/0.23.1680.1027@1680.-605.2560.986" timestamp="1602750124603" />
+    <state x="2569" y="-407" width="670" height="676" key="search.everywhere.popup" timestamp="1602751419748">
+      <screen x="1680" y="-605" width="2560" height="986" />
+    </state>
+    <state x="2569" y="-407" width="670" height="676" key="search.everywhere.popup/1680.-605.2560.986/0.23.1680.1027@1680.-605.2560.986" timestamp="1602751419748" />
   </component>
 </project>

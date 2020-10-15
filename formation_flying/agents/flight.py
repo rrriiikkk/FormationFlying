@@ -520,7 +520,7 @@ class Flight(Agent):
     #   Existing flights that havn't formed a formation yet will be re-assigned to become manager/auctioneer
     # =========================================================================
     def regenerate_manager_auctioneer(self):
-#        self.negotiation_state = 0
+        self.negotiation_state = 0
         self.potential_auctioneers = []
         self.potential_managers = []
         self.received_bids = []
@@ -651,7 +651,7 @@ class Flight(Agent):
 
         joining_point = self.calculate_joining_point(neighbor)
         dist_self = ((joining_point[0] - self.pos[0]) ** 2 + (joining_point[1] - self.pos[1]) ** 2) ** 0.5
-        dist_neighbor = ((joining_point[0] - self.pos[0]) ** 2 + (joining_point[1] - self.pos[1]) ** 2) ** 0.5
+        dist_neighbor = ((joining_point[0] - neighbor.pos[0]) ** 2 + (joining_point[1] - neighbor.pos[1]) ** 2) ** 0.5
 
         if dist_self >= dist_neighbor:
             speed = self.speed
