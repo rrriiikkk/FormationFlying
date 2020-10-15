@@ -27,6 +27,7 @@
     <list default="true" id="18e5cbe5-b8a7-4bbc-9c79-7f637ac91df2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/formation_flying/agents/flight.py" beforeDir="false" afterPath="$PROJECT_DIR$/formation_flying/agents/flight.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run.py" beforeDir="false" afterPath="$PROJECT_DIR$/run.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,6 +82,14 @@
       <option name="presentableId" value="Default" />
       <updated>1602497775092</updated>
     </task>
+    <task id="LOCAL-00001" summary="speed to formation solve">
+      <created>1602751904521</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1602751904521</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -94,6 +103,10 @@
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="speed to formation solve" />
+    <option name="LAST_COMMIT_MESSAGE" value="speed to formation solve" />
   </component>
   <component name="WindowStateProjectService">
     <state x="414" y="-905" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1602497819034">
@@ -113,6 +126,10 @@
       <screen x="1680" y="-605" width="2560" height="986" />
     </state>
     <state x="2677" y="-229" key="VCS.ChangelistChooser/1680.-605.2560.986/0.23.1680.1027@1680.-605.2560.986" timestamp="1602750124603" />
+    <state x="2504" y="-411" key="Vcs.Push.Dialog.v2" timestamp="1602751958942">
+      <screen x="1680" y="-605" width="2560" height="986" />
+    </state>
+    <state x="2504" y="-411" key="Vcs.Push.Dialog.v2/1680.-605.2560.986/0.23.1680.1027@1680.-605.2560.986" timestamp="1602751958942" />
     <state x="2569" y="-407" width="670" height="676" key="search.everywhere.popup" timestamp="1602751419748">
       <screen x="1680" y="-605" width="2560" height="986" />
     </state>

@@ -658,10 +658,10 @@ class Flight(Agent):
         else:
             speed = self.speed*(dist_self/dist_neighbor)
 
-        rest = dist_self % speed
-        regular_time = math.floor(dist_self / speed)
+        rest = float(dist_self % speed)
+        regular_time = math.floor(float(dist_self / speed))
         if rest > 0:
             time = regular_time + 1
         elif rest == 0:
             time = regular_time
-        return (dist_self / time)
+        return float(dist_self / time)
