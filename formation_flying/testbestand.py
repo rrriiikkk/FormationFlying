@@ -12,28 +12,11 @@ import numpy as np
 
 
 
-
-a = 2
-
-if a == 3:
-    a = 2
-elif a == 2:
-    a = 1
-    
-print(a)
-
-
-
-
-negotiation_state = 0
-
-
-negotiation_state += 1
-
-
-
-
-
+a = [1,2,3,4,5]
+b = [6,7,8,9,10]
+for i in range(len(a)):
+    if a[i] == 1:
+        b[i] = 1.25 * b[i]
 
 
 

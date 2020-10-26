@@ -19,6 +19,7 @@ from mesa import Agent
 from .airports import Airport
 from ..negotiations.greedy import do_greedy
 from ..negotiations.CNP import do_CNP
+from ..negotiations.english import do_English
 import math
 
 
@@ -102,6 +103,7 @@ class Flight(Agent):
         # =============================================================================
         self.accepting_bids = 0
         self.received_bids = []
+        self.received_bids_old = []
 
         self.manager = self.model.random.choice([0, 1])
         if self.manager:
@@ -115,12 +117,18 @@ class Flight(Agent):
         keuze = np.append(zeros, ones)        
         
         self.Alliance               = self.model.random.choice(keuze)
-        self.potential_auctioneers  = []            #this list will contain all the potential auctioneers for a manager
-        self.potential_managers     = []            #this list will contain all the potential managers that sent a request to the respective auctioneer
-        self.negotiation_state      = 0             #0 = no negotiation is initialised, managers will send requests to auctioneers
-                                                    #1 = Auctioneers send their biddings if they are interested, 
-                                                    #2 = Manager decides who to give the contract 
-        
+        self.potential_auctioneers  = []            # this list will contain all the potential auctioneers for a manager
+        self.potential_managers     = []            # this list will contain all the potential managers that sent a request to the respective auctioneer
+        self.negotiation_state      = 0             # 0 = no negotiation is initialised, managers will send requests to auctioneers
+                                                    # 1 = Auctioneers send their biddings if they are interested,
+                                                    # 2 = Manager decides who to give the contract
+        self.ownbid = 0
+        self.maxbid = 0
+        self.own_exp_date = 0
+        self.bids_of_other_bidders = []             #shows agent the current bids
+
+        self.test = 'helaas'
+
         
         
 
@@ -146,8 +154,8 @@ class Flight(Agent):
 
             if self.model.negotiation_method == 1:
                 do_CNP(self)
-            # if self.model.negotiation_method == 2:
-            #     do_English(self)
+            if self.model.negotiation_method == 2:
+                do_English(self)
             # if self.model.negotiation_method == 3:
             #     do_Vickrey(self)
             # if self.model.negotiation_method == 4:
@@ -524,13 +532,24 @@ class Flight(Agent):
         self.potential_auctioneers = []
         self.potential_managers = []
         self.received_bids = []
+        self.ownbid = 0
+        self.maxbid = 0
+        self.own_exp_date = 0
+        self.bids_of_other_bidders = []
         if self.formation_state == 0:
             self.manager = self.model.random.choice([0, 1])
             if self.manager:
                 self.accepting_bids = 1
             else: 
                 self.accepting_bids = 0
-            self.auctioneer = abs(1 - self.manager)  
+            self.auctioneer = abs(1 - self.manager)
+
+    # =========================================================================
+    #   Let bidders know what other bids have been done
+    # =========================================================================
+    def other_bids(self,bidder,otherbids):
+        bidder.bids_of_other_bidders = otherbids
+
 
     # =========================================================================
     #   This function randomly chooses a new destination airport. 

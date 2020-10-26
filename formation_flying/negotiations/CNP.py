@@ -58,6 +58,7 @@ def do_CNP(flight):
                         bid_value = max(potential_winning_manager)
                         bid_exp_date = 3 #fixed value
                         flight.make_bid(winning_manager, bid_value, bid_exp_date)
+
                         if flight.formation_state == 2:
                             raise Exception("auctioneer in formation tries to form other formation...")
                     else:
