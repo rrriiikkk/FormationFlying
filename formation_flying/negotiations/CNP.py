@@ -37,10 +37,6 @@ def do_CNP(flight):
                 raise Exception("The flight is neither a manager nor an auctioneer")
 
 
-
-
-
-
         elif flight.negotiation_state == 1:
 
             if flight.manager == 1 and flight.auctioneer == 0:
@@ -64,14 +60,8 @@ def do_CNP(flight):
                     else:
                         pass
 
-
-
-
             else:
                 raise Exception("The flight is neither a manager nor an auctioneer")
-
-
-
 
 
 
@@ -129,33 +119,12 @@ def do_CNP(flight):
                             flight.start_formation(winning_agent, bid_value, discard_received_bids=True)
 
 
-
-
-
-
-
-
-
-
-
             elif flight.manager == 0 and flight.auctioneer == 1:
                 pass
 
 
             else:
                 raise Exception("The flight is neither a manager nor an auctioneer")
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     flight.negotiation_state += 1

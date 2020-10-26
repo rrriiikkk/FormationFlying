@@ -17,21 +17,22 @@ def do_English(flight):
         if flight.negotiation_state == 0:
 
             if flight.manager == 1 and flight.auctioneer == 0:
-                formation_targets = flight.find_CNP_auctioneers()  # function works also for English protocol
+                flight.negotiation_state += 1
+
+            elif flight.manager == 0 and flight.auctioneer == 1:
+
+                formation_targets = flight.find_greedy_candidate()  # function works also for English protocol
 
                 if not formation_targets == []:
-                    for auctioneer in formation_targets:
-                        flight.which_manager_for_which_auctioneer(auctioneer)
+
+                    for manager in formation_targets:
+                        flight.which_manager_for_which_auctioneerENGLISH(manager)
 
                     flight.negotiation_state += 1
                 else:
                     flight.regenerate_manager_auctioneer()
 
 
-
-
-            else:
-                flight.negotiation_state += 1
 
 
 

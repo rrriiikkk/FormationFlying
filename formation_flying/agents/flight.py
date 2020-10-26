@@ -156,8 +156,8 @@ class Flight(Agent):
                 do_CNP(self)
             if self.model.negotiation_method == 2:
                 do_English(self)
-            # if self.model.negotiation_method == 3:
-            #     do_Vickrey(self)
+            if self.model.negotiation_method == 3:
+                do_Vickrey(self)
             # if self.model.negotiation_method == 4:
             #     do_Japanese(self)
 
@@ -482,7 +482,7 @@ class Flight(Agent):
         neighbors = self.model.space.get_neighbors(pos=self.pos, radius=self.communication_range, include_center=True)
         candidates = []
         for agent in neighbors:
-            if type(agent) is Flight:
+            if type(agent) is Flight and agent.negotiation_state == 0 and agent.formation_state == 0:
                 if agent.accepting_bids == 1:
               # if agent.formation_state == 0 or agent.formation_state == 2:
                     if not self == agent:
@@ -512,6 +512,10 @@ class Flight(Agent):
     def which_manager_for_which_auctioneer(self, auctioneer):
         self.potential_auctioneers.append(auctioneer)
         auctioneer.potential_managers.append(self)
+
+    def which_manager_for_which_auctioneerENGLISH(self, manager):
+        self.potential_managers.append(manager)
+        manager.potential_auctioneers.append(self)
         
         
 
