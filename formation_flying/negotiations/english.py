@@ -13,7 +13,7 @@ def do_English(flight):
 
     if flight.formation_state == 0 or flight.formation_state == 2:
 
-        # managers wil find potential auctioneers
+        # auctioneers will find potential managers
         if flight.negotiation_state == 0:
 
             if flight.manager == 1 and flight.auctioneer == 0:
@@ -25,38 +25,17 @@ def do_English(flight):
 
                 if not formation_targets == []:
 
+                    potential_winning_manager = []
+                    alliancemember = []
+
                     for manager in formation_targets:
-                        flight.which_manager_for_which_auctioneerENGLISH(manager)
-
-                    flight.negotiation_state += 1
-                else:
-                    flight.regenerate_manager_auctioneer()
-
-
-
-
-
-
-
-        # potential auctioneers will decide if they want to take part of the bidding
-        elif flight.negotiation_state == 1:
-            if flight.manager == 0 and flight.auctioneer == 1 and not flight.formation_state == 2:
-                potential_winning_manager = []
-                alliancemember = []
-
-                if flight.potential_managers != []:
-                    for manager in flight.potential_managers:
 
                         if manager.auctioneer == 1 and manager.manager == 0 or (manager.formation_state == 2 or manager.formation_state == 1 or manager.formation_state == 4):
-                            flight.potential_managers.remove(manager)
-                    for manager in flight.potential_managers:
+                            formation_targets.remove(manager)
+                    for manager in formation_targets:
                         # print("self:",flight.formation_state,"manager:", manager.formation_state)
                         potential_winning_manager.append(flight.calculate_potential_fuelsavings(manager))
                         alliancemember.append(manager.Alliance)
-
-
-
-
 
 
                     if not potential_winning_manager == [] and max(potential_winning_manager) > 0 and flight.formation_state == 0:
@@ -66,9 +45,9 @@ def do_English(flight):
                                 potential_winning_manager[i] = 1.25 * potential_winning_manager[i]
 
 
-                        winning_manager = flight.potential_managers[
+                        winning_manager = formation_targets[
                             potential_winning_manager.index(max(potential_winning_manager))]
-                        if winning_manager.auctioneer == 0:
+                        if winning_manager.auctioneer == 0 and winning_manager.manager == 1:
 
 
                             # /20 is randomly chosen, seems reasonable to find a max #steps to take part in bidding
@@ -98,15 +77,9 @@ def do_English(flight):
                 else:
                     flight.regenerate_manager_auctioneer()
 
-            elif flight.formation_state == 2:
-                flight.regenerate_manager_auctioneer()
 
 
-            else:
-                flight.negotiation_state += 1
-
-
-        elif flight.negotiation_state % 2 == 0:
+        elif flight.negotiation_state % 2 == 1:
             if flight.manager == 1 and flight.auctioneer == 0:
                 # managers send list with all biddings to all bidders
                 # if there is 1 bidding value left, auctioneer wins --> negotiation state of manager goes to 0!
@@ -122,10 +95,14 @@ def do_English(flight):
                     flight.negotiation_state += 1
 
                     if len(flight.received_bids) == 1 or flight.received_bids == flight.received_bids_old:
-                        winning_agent = flight.received_bids[0].get("bidding_agent")
-                        bid_value = flight.received_bids[0].get("value")
+                        potential_winning_manager = []
+                        for bid in flight.received_bids:
+                            potential_winning_manager.append(bid.get("value"))
 
-                        if len(flight.agents_in_my_formation) > 0:
+                        winning_agent = flight.received_bids[potential_winning_manager.index(max(potential_winning_manager))].get("bidding_agent")
+                        bid_value = flight.received_bids[potential_winning_manager.index(max(potential_winning_manager))].get("value")
+
+                        if len(flight.agents_in_my_formation) > 0 and not winning_agent.formation_state == 1 and not winning_agent.auctioneer == 1:
                             flight.add_to_formation(winning_agent, bid_value, discard_received_bids=True)
                             print('large formation!!!')
                         elif len(flight.agents_in_my_formation) == 0 and len(winning_agent.agents_in_my_formation) == 0:
@@ -138,20 +115,14 @@ def do_English(flight):
                 elif len(flight.received_bids) == 0:
                     flight.regenerate_manager_auctioneer()
 
-
-
             else:
                 flight.negotiation_state += 1
 
 
-
-
-        elif flight.negotiation_state % 2 == 1:
+        elif flight.negotiation_state % 2 == 0:
             # auctioneers look at all other bids.
             # if there are still other bids, update own bid if it's under max_fuelsavings
             # if their own bid is the only bid remaining they will be the winning bidder
-
-
 
             if flight.manager == 0 and flight.auctioneer == 1:
 
@@ -183,8 +154,3 @@ def do_English(flight):
                     flight.regenerate_manager_auctioneer()
             else:
                 flight.negotiation_state += 1
-
-
-
-
-

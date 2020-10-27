@@ -20,6 +20,7 @@ from .airports import Airport
 from ..negotiations.greedy import do_greedy
 from ..negotiations.CNP import do_CNP
 from ..negotiations.english import do_English
+from ..negotiations.vickrey import do_Vickrey
 import math
 
 
