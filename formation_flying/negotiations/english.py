@@ -33,9 +33,10 @@ def do_English(flight):
                         if manager.auctioneer == 1 and manager.manager == 0 or (manager.formation_state == 2 or manager.formation_state == 1 or manager.formation_state == 4):
                             formation_targets.remove(manager)
                     for manager in formation_targets:
-                        # print("self:",flight.formation_state,"manager:", manager.formation_state)
-                        potential_winning_manager.append(flight.calculate_potential_fuelsavings(manager))
-                        alliancemember.append(manager.Alliance)
+                        if manager.accepting_bids == True:
+                            # print("self:",flight.formation_state,"manager:", manager.formation_state)
+                            potential_winning_manager.append(flight.calculate_potential_fuelsavings(manager))
+                            alliancemember.append(manager.Alliance)
 
 
                     if not potential_winning_manager == [] and max(potential_winning_manager) > 0 and flight.formation_state == 0:
@@ -84,7 +85,7 @@ def do_English(flight):
                 # managers send list with all biddings to all bidders
                 # if there is 1 bidding value left, auctioneer wins --> negotiation state of manager goes to 0!
 
-                if len(flight.received_bids) >= 1 :
+                if len(flight.received_bids) >= 1:
                     bidding_values = []
                     for bid in flight.received_bids:
                         bidding_values.append(bid.get("value"))

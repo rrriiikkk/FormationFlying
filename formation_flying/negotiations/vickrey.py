@@ -27,13 +27,16 @@ def do_Vickrey(flight):
                     alliancemember = []
 
                     for manager in formation_targets:
-                        potential_winning_manager.append(flight.calculate_potential_fuelsavings(manager))
-                        alliancemember.append(manager.Alliance)
+                        if manager.accepting_bids == True:
+                            potential_winning_manager.append(flight.calculate_potential_fuelsavings(manager))
+                            alliancemember.append(manager.Alliance)
+
 
                     if max(potential_winning_manager) > 0:
-                        for i in range(len(alliancemember)):
-                            if alliancemember[i] == 1:
-                                potential_winning_manager[i] = 1.25 * potential_winning_manager[i]
+                        if flight.Alliance == 1:
+                            for i in range(len(alliancemember)):
+                                if alliancemember[i] == 1:
+                                    potential_winning_manager[i] = 1.25 * potential_winning_manager[i]
 
                         winning_manager = formation_targets[potential_winning_manager.index(max(potential_winning_manager))]
                         bid_value = max(potential_winning_manager)
@@ -52,7 +55,7 @@ def do_Vickrey(flight):
 
 
 
-# Add alliance above and then change CNP from below to Vickrey
+
 
         elif flight.negotiation_state == 1:  # managers will decide upon winning auctioneer
             if flight.manager == 1 and flight.auctioneer == 0:

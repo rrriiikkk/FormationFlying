@@ -21,6 +21,7 @@ from ..negotiations.greedy import do_greedy
 from ..negotiations.CNP import do_CNP
 from ..negotiations.english import do_English
 from ..negotiations.vickrey import do_Vickrey
+from ..negotiations.japanese import do_Japanese
 import math
 
 
@@ -128,8 +129,8 @@ class Flight(Agent):
         self.own_exp_date = 0
         self.bids_of_other_bidders = []             #shows agent the current bids
 
-        self.test = 'helaas'
-
+        self.auctionvalue = None #used in Japanese auction by manager
+        self.numberformation = 0
         
         
 
@@ -159,8 +160,8 @@ class Flight(Agent):
                 do_English(self)
             if self.model.negotiation_method == 3:
                 do_Vickrey(self)
-            # if self.model.negotiation_method == 4:
-            #     do_Japanese(self)
+            if self.model.negotiation_method == 4:
+                do_Japanese(self)
 
     # =============================================================================
     #   This formula assumes that the route of both agents are of same length, 
@@ -540,11 +541,14 @@ class Flight(Agent):
         self.ownbid = 0
         self.maxbid = 0
         self.own_exp_date = 0
+        self.auctionvalue = 50
+
         self.bids_of_other_bidders = []
         if self.formation_state == 0:
             self.manager = self.model.random.choice([0, 1])
             if self.manager:
                 self.accepting_bids = 1
+
             else: 
                 self.accepting_bids = 0
             self.auctioneer = abs(1 - self.manager)
