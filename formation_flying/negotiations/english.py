@@ -33,7 +33,7 @@ def do_English(flight):
                         if manager.auctioneer == 1 and manager.manager == 0 or (manager.formation_state == 2 or manager.formation_state == 1 or manager.formation_state == 4):
                             formation_targets.remove(manager)
                     for manager in formation_targets:
-                        if manager.accepting_bids == True:
+                        if manager.accepting_bids == True and not flight.formation_state == 2:
                             # print("self:",flight.formation_state,"manager:", manager.formation_state)
                             potential_winning_manager.append(flight.calculate_potential_fuelsavings(manager))
                             alliancemember.append(manager.Alliance)
@@ -103,7 +103,7 @@ def do_English(flight):
                         winning_agent = flight.received_bids[potential_winning_manager.index(max(potential_winning_manager))].get("bidding_agent")
                         bid_value = flight.received_bids[potential_winning_manager.index(max(potential_winning_manager))].get("value")
 
-                        if len(flight.agents_in_my_formation) > 0 and not winning_agent.formation_state == 1 and not winning_agent.auctioneer == 1:
+                        if len(flight.agents_in_my_formation) > 0 and not winning_agent.formation_state == 1 and not winning_agent.formation_state == 2:
                             flight.add_to_formation(winning_agent, bid_value, discard_received_bids=True)
                             print('large formation!!!')
                         elif len(flight.agents_in_my_formation) == 0 and len(winning_agent.agents_in_my_formation) == 0:
