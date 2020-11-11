@@ -5,6 +5,10 @@
 # You can add more advanced metric here!
 # =============================================================================
 '''
+
+from .agents.flight import Flight
+from .agents.airports import Airport
+
 def compute_total_fuel_used(model):
     return model.total_fuel_consumption
 
@@ -24,6 +28,12 @@ def total_deal_value(model):
 def compute_total_flight_time(model):
     return model.total_flight_time
 
+def total_planned_time(model):
+    return model.total_planned_time
+
+def compute_time_delay(model):
+    return model.total_flight_time-model.total_planned_time
+
 def compute_model_steps(model):
     return model.schedule.steps
 
@@ -32,3 +42,21 @@ def new_formation_counter(model):
 
 def add_to_formation_counter(model):
     return model.add_to_formation_counter
+
+def number_not_in_formation(model):
+    return model.flights_not_in_formation
+
+def compute_average_time_for_formation(model):
+    if model.flights_not_in_formation < 50:
+        return model.total_steps_till_formations/(50-model.flights_not_in_formation)
+
+def alliance_fuel_counter(model):
+    #alliance_planned_fuel = 0
+    alliance_real_fuel = 0
+    for agent in model.schedule.agents:
+        if type(agent) is Flight:
+            if agent.Alliance == 1:
+                #alliance_planned_fuel += agent.planned_fuel
+                alliance_real_fuel += agent.fuel_consumption
+    return alliance_real_fuel
+

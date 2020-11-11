@@ -36,18 +36,18 @@ from .metrics import *
 max_steps = 10000 
 
 # Multiple iterations are used when running the batchrunner.py:
-n_iterations = 2
+n_iterations = 100
 
 model_params = {
     "n_flights": 50,
     "n_origin_airports": 20,
     "n_destination_airports": 20,
-    "communication_range": 200, #[km]
+    #"communication_range": 200, #[km]
     "width": 750, # [km]
     "height": 750, # [km]
     "speed": 0.25, #[km / second]
     "fuel_reduction": 0.75, 
-    "negotiation_method": 4,
+    "negotiation_method": 1,
     "departure_window": 3, 
     "origin_airport_x": [0.01, 0.3], 
     "origin_airport_y": [0.01, 0.3],
@@ -59,16 +59,25 @@ model_params = {
 
 # To run model with a variable parameter:
 # example: variable_params = {"communication_range": [0, 100, 500]}
-variable_params = {}
+variable_params = {#"negotiation_method": [0, 1]
+                    "communication_range": [50, 200, 500]
+}
 
-model_reporter_parameters={"Total Fuel Used": compute_total_fuel_used, 
-                           "steps": compute_model_steps, 
+model_reporter_parameters={"Total Fuel Used": compute_total_fuel_used,
+                           "Total planned flight time" : total_planned_time,
+                           "Total flight delay" : compute_time_delay,
+                           "steps": compute_model_steps,
                            "new formations": new_formation_counter, 
                            "added to formations": add_to_formation_counter, 
                            "Total planned Fuel": compute_planned_fuel,
                            "Total saved potential saved fuel": fuel_savings_closed_deals, 
                            "Real saved fuel": real_fuel_saved,
-                           "Deal values": total_deal_value}
+                           "Deal values": total_deal_value,
+                           "Alliance Fuel Used": alliance_fuel_counter,
+                           "Number of flights without formation": number_not_in_formation,
+                           "Number of formations": new_formation_counter,
+                           "Average time to form formation": compute_average_time_for_formation,
+                           }
 
 # In order to collect values like "deal-value", they should be specified on all agents.
 agent_reporter_parameters={"Deal value": "deal_value"} 

@@ -114,7 +114,7 @@ def do_CNP(flight):
 
                         if len(flight.agents_in_my_formation) > 0:
                             flight.add_to_formation(winning_agent, bid_value, discard_received_bids=True)
-                            print('large formation!!!')
+                            #print('large formation!!!')
                         elif len(flight.agents_in_my_formation) == 0 and len(winning_agent.agents_in_my_formation) == 0:
                             flight.start_formation(winning_agent, bid_value, discard_received_bids=True)
 

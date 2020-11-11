@@ -21,7 +21,23 @@ batch_run = BatchRunner(FormationFlying,
 batch_run.run_all()
 
 run_data = batch_run.get_model_vars_dataframe()
-run_data.head()
+#run_data.head()
 
-print((run_data["Real saved fuel"] - run_data["Total saved potential saved fuel"])/ run_data["Total Fuel Used"])
+#print((run_data["Real saved fuel"] - run_data["Total saved potential saved fuel"])/ run_data["Total Fuel Used"])
+data_of_interest = run_data[["negotiation_method",
+                             "communication_range",
+                             "Total planned Fuel",
+                             "Real saved fuel",
+                             "Total planned flight time",
+                             "Total flight delay",
+                             "Number of flights without formation",
+                             "Average time to form formation"]]
+first_value_data = data_of_interest.head(n_iterations)
+second_value_data = data_of_interest.iloc[n_iterations + 1 : (2 * n_iterations), : ]
+last_value_data = data_of_interest.tail(n_iterations)
+
+print(first_value_data.mean(skipna = True))
+print(second_value_data.mean(skipna = True))
+print(last_value_data.mean(skipna = True))
+
 

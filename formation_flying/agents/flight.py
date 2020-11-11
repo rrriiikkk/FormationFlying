@@ -82,12 +82,18 @@ class Flight(Agent):
         self.joining_point = [-10, -10]
 
         self.planned_fuel = calc_distance(self.pos, self.destination)
+        self.planned_duration = self.planned_fuel/speed
         self.model.total_planned_fuel += self.planned_fuel
+        self.model.total_planned_time += self.planned_duration
 
-        self.fuel_consumption = 0   # A counter which counts the fuel consumed
-        self.deal_value = 0         # All the fuel lost or won during bidding
+        #self.duration = 0              # A counter which tracks physical time of the flight
+        self.fuel_consumption = 0       # A counter which counts the fuel consumed
+        self.deal_value = 0             # All the fuel lost or won during bidding
+        self.have_been_in_formation = 0 # used for checking whether flight has been in a formation
+        self.steps_tilL_formation = 0   # used to count steps until flight has formed formation
+        self.no_formation_anymore = 0   # to stop counting the steps when it is clear that there will be no formation formed anymore
 
-        self.formation_state = 0    # 0 = no formation, 
+        self.formation_state = 0    #0 = no formation,
                                     #1 = committed, 
                                     #2 = in formation, 
                                     #3 = unavailable, 
@@ -147,6 +153,19 @@ class Flight(Agent):
     #   !!! TODO Exc. 2: implement other negotiation methods.!!!
     # =============================================================================
     def step(self):
+        if self.formation_state == 2 and self.have_been_in_formation == 0:
+            self.model.flights_not_in_formation -= 1            #counts the number of flights that have not been in formation
+            self.have_been_in_formation = +1                    #makes sure that formations are not counted twice
+
+        if self.formation_state == 0 and self.have_been_in_formation == 0 and self.no_formation_anymore == 0:
+            if self.steps_tilL_formation < 1000:
+                self.steps_tilL_formation += 1
+                self.model.total_steps_till_formations += 1
+            else:
+                self.steps_tilL_formation = 0 #no formation will be formed and thus this flight is excluded from the measurments
+                self.model.total_steps_till_formations -= 1000
+                self.no_formation_anymore =+1
+
         if self.state == "flying":
             if self.model.negotiation_method == 0:
                 do_greedy(self)
@@ -162,6 +181,7 @@ class Flight(Agent):
                 do_Vickrey(self)
             if self.model.negotiation_method == 4:
                 do_Japanese(self)
+
 
     # =============================================================================
     #   This formula assumes that the route of both agents are of same length, 
@@ -229,11 +249,11 @@ class Flight(Agent):
             else:
                 joining_point = target_agent.pos
 
-        elif alpha_agent1 == 0 and alpha_agent2 == 0:
+        else:
             joining_point = origin_midpoint
 
-        else:
-            raise Exception("the origin midpoint cannot lay in front or behind both agents")
+        #else:
+            #raise Exception("the origin midpoint cannot lay in front or behind both agents")
 
         return joining_point
 
@@ -294,10 +314,10 @@ class Flight(Agent):
             else:
                 leaving_point = target_agent.destination
 
-        elif beta_agent1 == 0 and beta_agent2 == 0:
-            leaving_point = dest_midpoint
         else:
-            raise Exception("the destination midpoint cannot lay in front or behind both agents")
+            leaving_point = dest_midpoint
+        #else:
+            #raise Exception("the destination midpoint cannot lay in front or behind both agents")
 
         return leaving_point
 
@@ -484,7 +504,7 @@ class Flight(Agent):
         neighbors = self.model.space.get_neighbors(pos=self.pos, radius=self.communication_range, include_center=True)
         candidates = []
         for agent in neighbors:
-            if type(agent) is Flight and agent.negotiation_state == 0 and agent.formation_state == 0:
+            if type(agent) is Flight and agent.manager == 1 and self.manager == 0 and agent.negotiation_state == 0 and agent.formation_state == 0:
                 if agent.accepting_bids == 1:
               # if agent.formation_state == 0 or agent.formation_state == 2:
                     if not self == agent:
@@ -658,6 +678,7 @@ class Flight(Agent):
 
             self.model.total_fuel_consumption += f_c
             self.fuel_consumption += f_c
+            #self.total_duration += 1  # adds one second to the total time of the flight)
 
             self.model.space.move_agent(self, new_pos)
 
@@ -687,9 +708,13 @@ class Flight(Agent):
             speed = self.speed*(dist_self/dist_neighbor)
 
         rest = float(dist_self % speed)
-        regular_time = math.floor(float(dist_self / speed))
-        if rest > 0:
-            time = regular_time + 1
-        elif rest == 0:
-            time = regular_time
+        if abs(dist_self) <= 0.0001:
+            regular_time = 0
+            return 0
+        else:
+            regular_time = math.floor(dist_self/speed)
+            if rest > 0:
+                time = regular_time + 1
+            elif rest == 0:
+                time = regular_time
         return float(dist_self / time)

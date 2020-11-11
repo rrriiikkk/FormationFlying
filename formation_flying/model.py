@@ -43,7 +43,7 @@ class FormationFlying(Model):
         width=1500, # [km]
         height=1500,
         speed=0.220, #[km/second]
-        communication_range=1000, #[km]
+        communication_range=50, #[km]
         departure_window = 3,
         origin_airport_x = [0.0, 0.3], # the origin airports are randomly generated within these boundaries
         origin_airport_y = [0.0, 0.3],
@@ -86,10 +86,13 @@ class FormationFlying(Model):
         self.fuel_savings_closed_deals = 0
 
         self.total_planned_fuel = 0
+        self.total_planned_time = 0
 
 
         self.new_formation_counter = 0
         self.add_to_formation_counter = 0
+        self.flights_not_in_formation = n_flights
+        self.total_steps_till_formations = 0
 
         self.total_fuel_consumption = 0
         self.total_flight_time = 0
