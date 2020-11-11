@@ -89,10 +89,11 @@ def do_Japanese(flight):
                         winning_agent.regenerate_manager_auctioneer()
 
                     bid_value = flight.auctionvalue
-                    if len(flight.agents_in_my_formation) > 0 and not winning_agent.formation_state == 1 and not winning_agent.auctioneer == 1:
+                    if len(flight.agents_in_my_formation) > 0 and not winning_agent.formation_state == 1 and not winning_agent.formation_state == 2:
                         flight.add_to_formation(winning_agent, bid_value, discard_received_bids=True)
                         print('large formation!!!')
-                    elif len(flight.agents_in_my_formation) == 0 and len(winning_agent.agents_in_my_formation) == 0:
+                    elif len(flight.agents_in_my_formation) == 0 and len(winning_agent.agents_in_my_formation) == 0 and flight.manager == 1:
+
                         flight.start_formation(winning_agent, bid_value, discard_received_bids=True)
 
 

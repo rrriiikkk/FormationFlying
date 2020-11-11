@@ -707,7 +707,13 @@ class Flight(Agent):
         else:
             speed = self.speed*(dist_self/dist_neighbor)
 
-        rest = float(dist_self % speed)
+
+
+
+        if speed == 0:
+            rest = 0
+        else:
+            rest = float(dist_self % speed)
         if abs(dist_self) <= 0.0001:
             regular_time = 0
             return 0
