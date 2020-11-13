@@ -81,12 +81,18 @@ def do_Japanese(flight):
                     flight.negotiation_state += 1
                 elif len(flight.received_bids) == 1:
                     winning_agent = flight.received_bids[0].get("bidding_agent")
+
+
                     flight.numberformation += 1
                     winning_agent.numberformation += 1
 
                     if flight.numberformation == 2 or winning_agent.numberformation == 2:
                         flight.regenerate_manager_auctioneer()
                         winning_agent.regenerate_manager_auctioneer()
+
+                    if winning_agent == flight.unique_id: #duckttape fix
+                        flight.regenerate_manager_auctioneer()
+
 
                     bid_value = flight.auctionvalue
                     if len(flight.agents_in_my_formation) > 0 and not winning_agent.formation_state == 1 and not winning_agent.formation_state == 2:
