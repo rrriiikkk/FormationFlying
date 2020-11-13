@@ -34,10 +34,16 @@ data_of_interest = run_data[["negotiation_method",
                              "Average time to form formation"]]
 first_value_data = data_of_interest.head(n_iterations)
 second_value_data = data_of_interest.iloc[n_iterations + 1 : (2 * n_iterations), : ]
-last_value_data = data_of_interest.tail(n_iterations)
+#third_value_data = data_of_interest.iloc[2 * n_iterations + 1 : (3 * n_iterations), : ]
+#fourth_value_data = data_of_interest.iloc[3 * n_iterations + 1 : 4 * n_iterations, : ]
 
 print(first_value_data.mean(skipna = True))
-print(second_value_data.mean(skipna = True))
-print(last_value_data.mean(skipna = True))
+print(first_value_data.std(skipna = True))
+#print(second_value_data.mean(skipna = True))
+#print(second_value_data.std(skipna = True))
+#print(third_value_data.mean(skipna = True))
+#print(third_value_data.std(skipna = True))
+#print(fourth_value_data.mean(skipna = True))
+#print(last_value_data.std(skipna = True))
 
 
