@@ -17,7 +17,7 @@ def do_CNP(flight):
         if flight.negotiation_state == 0:
             if flight.manager == 1 and flight.auctioneer == 0:
 
-                # search for auctioneers if the manager hasn't looked yet
+                # search for auctioneers
                 if flight.potential_auctioneers == []:
                     formation_targets = flight.find_CNP_auctioneers()
 
@@ -43,6 +43,7 @@ def do_CNP(flight):
                 pass
 
             elif flight.manager == 0 and flight.auctioneer == 1:
+                #the auctioneers will calculate for which manager they can save the most fuel and do a biding to that specifik manager
                 potential_winning_manager = []
 
                 if flight.potential_managers != []:
@@ -52,7 +53,7 @@ def do_CNP(flight):
                     if max(potential_winning_manager) > 0:
                         winning_manager = flight.potential_managers[potential_winning_manager.index(max(potential_winning_manager))]
                         bid_value = max(potential_winning_manager)
-                        bid_exp_date = 3 #fixed value
+                        bid_exp_date = 3 #fixed value, is required for making a bid, but nothing is done with it
                         flight.make_bid(winning_manager, bid_value, bid_exp_date)
 
                         if flight.formation_state == 2:
@@ -65,15 +66,16 @@ def do_CNP(flight):
 
 
 
-        elif flight.negotiation_state == 2:  # managers will decide upon winning auctioneer
+        elif flight.negotiation_state == 2:
+            # managers will decide upon winning auctioneer
             if flight.manager == 1 and flight.auctioneer == 0:
 
                 if flight.received_bids != []:
                     # here the manager will decide upon the winning bid
                     valueA = []  # bidding values of alliance members
                     valueB = []  # bidding values of non-alliance members
-                    bidding_agentA = []
-                    bidding_agentB = []
+                    bidding_agentA = [] #corresponding agents to bidding values
+                    bidding_agentB = [] #corresponding agents to bidding values
 
                     for bid in flight.received_bids:
                         if bid.get("Alliance") == 1:
@@ -128,6 +130,8 @@ def do_CNP(flight):
 
 
     flight.negotiation_state += 1
+
+    #the CNP consists out of 3 steps, thereafter the process starts over again and managers/auctioneers that are not in a formation will be reshuffled
     if flight.negotiation_state >= 3:
         flight.regenerate_manager_auctioneer()
 

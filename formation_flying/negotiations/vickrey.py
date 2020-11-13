@@ -11,12 +11,14 @@ def do_Vickrey(flight):
 
     if flight.formation_state == 0 or flight.formation_state == 2:
 
-        # auctioneers will find potential managers
+
         if flight.negotiation_state == 0 and flight.formation_state == 0:
 
             if flight.manager == 1 and flight.auctioneer == 0:
                 pass
 
+            # auctioneers will find potential managers and do a bidding of the true value of the fuel savings,
+            #taking into account alliance info, to the manager which will result in the highest bidding value
             elif flight.manager == 0 and flight.auctioneer == 1:
 
                 formation_targets = flight.find_greedy_candidate()  # function works also for Vickrey protocol
@@ -33,6 +35,7 @@ def do_Vickrey(flight):
 
 
                     if max(potential_winning_manager) > 0:
+                        #adjust bidding value if auctioneer AND mananager are part of the alliance
                         if flight.Alliance == 1:
                             for i in range(len(alliancemember)):
                                 if alliancemember[i] == 1:
@@ -40,7 +43,7 @@ def do_Vickrey(flight):
 
                         winning_manager = formation_targets[potential_winning_manager.index(max(potential_winning_manager))]
                         bid_value = max(potential_winning_manager)
-                        bid_exp_date = 2 #fixed value
+                        bid_exp_date = 2 #dummy value
                         flight.make_bid(winning_manager, bid_value, bid_exp_date)
 
                         if flight.formation_state == 2:
@@ -67,7 +70,9 @@ def do_Vickrey(flight):
 
                         bidvalues.append(bid.get("value"))
                     winning_agent = flight.received_bids[bidvalues.index(max(bidvalues))].get("bidding_agent")
-                    bidvalues[bidvalues.index(max(bidvalues))] = -100 #dummy value, makes sure, the winning agent has not to pay the max price
+
+                    # dummy value, makes sure, the winning agent has not to pay the max price
+                    bidvalues[bidvalues.index(max(bidvalues))] = -100
                     bid_value = max(bidvalues)
 
                     if bid_value > 0:
@@ -90,6 +95,8 @@ def do_Vickrey(flight):
 
 
     flight.negotiation_state += 1
+
+    #Protocol only consist out of 2 steps, thereafter the process will start all over again for the ones that could not form a formation
     if flight.negotiation_state >= 2:
         flight.regenerate_manager_auctioneer()
 
