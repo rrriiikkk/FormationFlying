@@ -36,7 +36,7 @@ from .metrics import *
 max_steps = 10000 
 
 # Multiple iterations are used when running the batchrunner.py:
-n_iterations = 20
+n_iterations = 100
 
 model_params = {
     "n_flights": 50,
@@ -47,11 +47,8 @@ model_params = {
     "height": 750, # [km]
     "speed": 0.25, #[km / second]
     "fuel_reduction": 0.75, 
-<<<<<<< Updated upstream
-    #"negotiation_method": 1,
-=======
-    "negotiation_method": 2,
->>>>>>> Stashed changes
+
+    "negotiation_method": 1,
     "departure_window": 3, 
     "origin_airport_x": [0.01, 0.3],
     "origin_airport_y": [0.01, 0.3],
